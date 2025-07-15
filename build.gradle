@@ -1,0 +1,96 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:1.3.1"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: "com.gradle.plugin-publish"
+
+group = 'io.github.ecdcaeb'
+version = '0.1.1'
+archivesBaseName = 'ASMImplement'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    pluginDeps
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation 'org.ow2.asm:asm:9.7.1'
+    implementation 'org.ow2.asm:asm-commons:9.7.1'
+    implementation 'org.ow2.asm:asm-tree:9.7.1'
+    implementation 'org.ow2.asm:asm-util:9.7.1'
+    
+    pluginDeps gradleApi()
+    pluginDeps 'org.ow2.asm:asm:9.7.1'
+    pluginDeps 'org.ow2.asm:asm-commons:9.7.1'
+    pluginDeps 'org.ow2.asm:asm-tree:9.7.1'
+    pluginDeps 'org.ow2.asm:asm-util:9.7.1'
+}
+
+compileJava {
+    options.deprecation = true
+    //options.compilerArgs += ["-Werror"]
+    //options.compilerArgs += ["-Werror", "-Xlint:unchecked"]
+}
+
+jar {
+    from configurations.pluginDeps.collect { 
+        it.isDirectory() ? it : zipTree(it) 
+    }
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}
+
+publishing {
+    repositories {
+        if (project.hasProperty("publish-username")) {
+            maven {
+                url project.hasProperty("publish-maven")
+                credentials {
+                    username project.hasProperty("publish-username") ? project.getProperty("publish-username") : null
+                    password project.hasProperty("publish-password") ? project.getProperty("publish-password") : null
+                }
+            }
+        }
+        maven {
+            url file('build/maven').toURI().toString()
+        }
+    }
+    publications {
+        publicateASMImplement(MavenPublication) {
+            groupId = project.group
+            artifactId = project.archivesBaseName
+            version = project.version
+            artifact jar
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/ecdcaeb/ASMImplement'
+    vcsUrl = 'https://github.com/ecdcaeb/ASMImplement.git'
+    tags = ['asm', 'bytecode', 'code-generation']
+
+    plugins {
+        asmImplementPlugin {
+            id = 'io.github.ecdcaeb.asm-implement'
+            displayName = 'ASM Implement Plugin'
+            description = 'Gradle plugin for dynamic bytecode generation using ASM'
+        }
+    }
