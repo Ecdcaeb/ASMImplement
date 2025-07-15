@@ -40,9 +40,4 @@ jobs:
           - name: Build
             uses: gradle/gradle-build-action@v2
             with:
-              arguments: build --info --stacktrace
-          - name: Upload Build Artifacts
-            uses: actions/upload-artifact@v4
-            with:
-              name: demo-${{ steps.date.outputs.date }}- ${{ github.run_number}}
-              path: build/libs
+              arguments: publish

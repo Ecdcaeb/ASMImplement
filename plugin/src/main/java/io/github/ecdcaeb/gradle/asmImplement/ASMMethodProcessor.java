@@ -1,30 +1,33 @@
-package io.github.ecdcaeb.asmImplement;
+package io.github.ecdcaeb.gradle.asmImplement;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.nio.file.*;
 import java.util.*;
 import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
-public class AsmMethodProcessor {
+public class ASMMethodProcessor {
     private static final String ANNOTATION_DESC = "Lio/github/ecdcaeb/asmImplement/ASMImplement;";
     private final ClassLoader classLoader;
     
-    public AsmMethodProcessor(ClassLoader loader) {
+    public ASMMethodProcessor(ClassLoader loader) {
         this.classLoader = loader;
     }
 
     public void processDirectory(File classDir) throws Exception {
-        Files.walk(classDir.toPath())
-            .filter(path -> path.toString().endsWith(".class"))
-            .forEach(path -> {
-                try {
-                    processClassFile(path.toFile());
-                } catch (Exception e) {
-                    throw new RuntimeException("Error processing " + path, e);
-                }
-            });
+        try (Stream<Path> walk = Files.walk(classDir.toPath())) {
+            walk.filter(path -> path.toString().endsWith(".class"))
+                    .forEach(path -> {
+                        try {
+                            processClassFile(path.toFile());
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error processing " + path, e);
+                        }
+                    });
+        }
     }
 
     private void processClassFile(File classFile) throws Exception {
@@ -94,12 +97,18 @@ public class AsmMethodProcessor {
         }
     }
 
-    private void invokeGenerator(String className, String methodName, 
-                                 MethodNode targetMethod, ClassNode classNode) {
+    private void invokeGenerator(String className, String methodName, MethodNode targetMethod, ClassNode classNode) {
         try {
             Class<?> generatorClass = Class.forName(className, true, classLoader);
-            Method generatorMethod = generatorClass.getMethod(methodName, MethodNode.class, ClassNode.class);
-            generatorMethod.invoke(null, targetMethod, classNode);
+            for (Method method : generatorClass.getDeclaredMethods()) {
+                if ((method.getModifiers() & Modifier.STATIC) != 0 && methodName.equals(method.getName())) {
+                    if (method.getParameterCount() == 1) {
+                        method.invoke(null, targetMethod);
+                    } else if (method.getParameterCount() == 2) {
+                        method.invoke(null, targetMethod, classNode);
+                    }
+                }
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to invoke generator: " + className + "." + methodName, e);
         }

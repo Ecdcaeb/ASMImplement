@@ -1,0 +1,77 @@
+
+plugins {
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '8.3.6'
+}
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+base {
+    group = 'io.github.ecdcaeb.gradle.asmImplement'
+    version = project.version;
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    gradlePluginPortal()
+}
+
+configurations {
+    shade
+    implementation.extendsFrom(shade)
+}
+
+dependencies {
+    compileOnly gradleApi()
+
+    implementation project(':annotations')
+
+    shade 'org.ow2.asm:asm:9.8'
+    shade 'org.ow2.asm:asm-tree:9.8'
+    shade 'org.ow2.asm:asm-commons:9.8'
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.shade]
+    relocate 'org.objectweb.asm', 'io.github.ecdcaeb.gradle.asmImplement.lib.asm'
+}
+
+gradlePlugin {
+    plugins {
+        asmImplement {
+            id = 'io.github.ecdcaeb.gradle.asmImplement'
+            implementationClass = 'io.github.ecdcaeb.gradle.asmImplement.ASMImplementPlugin'
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = project.group
+            artifactId = "ASMImplementPlugin"
+            version = project.version
+        }
+    }
+
+    repositories {
+        if (project.hasProperty("publish-username")) {
+            maven {
+                url project.hasProperty("publish-maven") ? project.getProperty("publish-maven") : ""
+                credentials {
+                    username project.getProperty("publish-username")
+                    password project.getProperty("publish-password")
+                }
+            }
+        }
+        maven {
+            url layout.buildDirectory.dir("maven")
+        }
+    }
+}

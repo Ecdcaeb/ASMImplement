@@ -2,9 +2,47 @@ a gradle plugin for ASMImplement
 
 
 See:
+```gradle
+pluginManagement {
+    repositories {
+        maven {
+            url 'https://ecdcaeb.github.io/maven/'
+        }
+    }
+}
+
+plugins {
+    id 'io.github.ecdcaeb.gradle.asmImplement' version '0.1.2'
+}
+/*
+buildscript {
+    repositories {
+        maven {
+            url 'https://ecdcaeb.github.io/maven/'
+        }
+    }
+    dependencies {
+        classpath "io.github.ecdcaeb.gradle.asmImplement:ASMImplementPlugin:0.1.2"
+    }
+}
+apply plugin: "io.github.ecdcaeb.gradle.asmImplement"
+*/
+
+repositories {
+    maven {
+        url 'https://ecdcaeb.github.io/maven/'
+    }
+}
+
+dependencies {
+    implementation 'io.github.ecdcaeb.gradle.asmImplement:ASMImplementAPI:0.1.2'
+}
+```
 
 
 ```java
+import io.github.ecdcaeb.gradle.asmImplement.ASMImplement;
+
 public class Calculator {
     @ASMImplement(
         generatorClass = "com.example.generators.ComputeFlagsGenerator",
@@ -16,9 +54,8 @@ public class Calculator {
 ```java
 package com.example.generators;
 
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
-import org.objectweb.asm.tree.ClassNode;
+import io.github.ecdcaeb.gradle.asmImplement.lib.asm.tree.*;
+import io.github.ecdcaeb.gradle.asmImplement.lib.asm.*;
 
 public class ComputeFlagsGenerator {
     public static void generate(MethodNode method, ClassNode classNode) {
