@@ -28,8 +28,7 @@ configurations {
 dependencies {
     compileOnly gradleApi()
 
-    implementation project(':annotations')
-
+    shade project(':annotations')
     shade 'org.ow2.asm:asm:9.8'
     shade 'org.ow2.asm:asm-tree:9.8'
     shade 'org.ow2.asm:asm-commons:9.8'

@@ -12,7 +12,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'io.github.ecdcaeb.gradle.asmImplement' version '0.1.2'
+    id 'io.github.ecdcaeb.gradle.asmImplement' version '0.1.3'
 }
 /*
 buildscript {
@@ -22,7 +22,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "io.github.ecdcaeb.gradle.asmImplement:ASMImplementPlugin:0.1.2"
+        classpath "io.github.ecdcaeb.gradle.asmImplement:ASMImplementPlugin:0.1.3"
     }
 }
 apply plugin: "io.github.ecdcaeb.gradle.asmImplement"
