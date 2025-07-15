@@ -26,6 +26,8 @@ public class ComputeFlagsGenerator {
         method.visitVarInsn(Opcodes.BIPUSH, 100);
         method.visitInsn(Opcodes.IADD);
         method.visitInsn(Opcodes.IRETURN);
+
+        method.visitMax(1, 1);
     }
 }
 ```
