@@ -22,20 +22,10 @@ import org.objectweb.asm.tree.ClassNode;
 
 public class ComputeFlagsGenerator {
     public static void generate(MethodNode method, ClassNode classNode) {
-        method.instructions.clear();
-        
-        method.instructions.add(new VarInsnNode(Opcodes.ILOAD, 1));
-        method.instructions.add(new IntInsnNode(Opcodes.BIPUSH, 100));
-        method.instructions.add(new InsnNode(Opcodes.IADD));
-        method.instructions.add(new InsnNode(Opcodes.IRETURN));
-        
-        
-        // 添加本地变量表（可选）
-        method.localVariables = new ArrayList<>();
-        method.localVariables.add(new LocalVariableNode(
-            "data", "I", null, 
-            new LabelNode(), new LabelNode(), 1
-        ));
+        method.visitVarInsn(Opcodes.ILOAD, 1);
+        method.visitVarInsn(Opcodes.BIPUSH, 100);
+        method.visitInsn(Opcodes.IADD);
+        method.visitInsn(Opcodes.IRETURN);
     }
 }
 ```
