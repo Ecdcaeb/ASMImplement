@@ -2,3 +2,8 @@ rootProject.name = 'asm-implement-plugin'
 
 include 'annotations'
 include 'plugin'
+include 'tests'
+
+project(":annotations").projectDir = file("projects/annotations")
+project(":plugin").projectDir = file("projects/plugin")
+project(":tests").projectDir = file("projects/tests")

@@ -27,17 +27,13 @@ configurations {
 
 dependencies {
     compileOnly gradleApi()
-
+    implementation(project(':annotations'))
     shade project(':annotations')
-    shade 'org.ow2.asm:asm:9.8'
-    shade 'org.ow2.asm:asm-tree:9.8'
-    shade 'org.ow2.asm:asm-commons:9.8'
 }
 
 shadowJar {
     archiveClassifier.set('')
     configurations = [project.configurations.shade]
-    relocate 'org.objectweb.asm', 'io.github.ecdcaeb.gradle.asmImplement.lib.asm'
 }
 
 gradlePlugin {
@@ -73,4 +69,8 @@ publishing {
             url layout.buildDirectory.dir("maven")
         }
     }
+}
+
+sourceSets {
+
 }

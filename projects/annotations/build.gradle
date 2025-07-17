@@ -1,15 +1,44 @@
 plugins {
-    id 'java-library'
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradleup.shadow' version '8.3.6'
 }
-
-group = 'io.github.ecdcaeb.gradle.asmImplement'
-version = project.version;
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    gradlePluginPortal()
+}
+
+base {
+    group = 'io.github.ecdcaeb.gradle.asmImplement'
+    version = project.version;
+}
+
+configurations {
+    shade
+    implementation.extendsFrom(shade)
+}
+
+dependencies {
+    compileOnly gradleApi()
+
+    shade 'org.ow2.asm:asm:9.8'
+    shade 'org.ow2.asm:asm-commons:9.8'
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.shade]
+    relocate 'org.objectweb.asm', 'io.github.ecdcaeb.gradle.asmImplement.lib.asm'
+}
+
 
 publishing {
     publications {

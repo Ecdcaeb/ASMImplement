@@ -1,0 +1,25 @@
+
+plugins {
+    id 'java-gradle-plugin'
+//    id 'io.github.ecdcaeb.gradle.asmImplement'
+}
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+base {
+    group = 'io.github.ecdcaeb.gradle.asmImplement'
+    version = project.version;
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    gradlePluginPortal()
+}
+
+dependencies {
+    compileOnly gradleApi()
+
+    compileOnly project(':plugin')
+}
